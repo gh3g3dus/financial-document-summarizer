@@ -23,3 +23,7 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+extracted_text.txt
+chunk_*.txt
+*.txt  # Optional: excludes all .txt if you want ultra-clean
