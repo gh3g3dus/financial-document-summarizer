@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import subprocess
 import os
 
 app = Flask(__name__)
@@ -6,10 +7,43 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def index():
     summary = None
+    insights = None
+    error = None
+
     if request.method == "POST":
-        # Placeholder — we'll fill this in next steps
-        summary = "AI summary will appear here after processing..."
-    return render_template("index.html", summary=summary)
+        url = request.form.get("url")
+        if url:
+            try:
+                # Use the venv's Python executable to ensure correct environment
+                python_exe = os.path.join(os.getcwd(), "venv", "Scripts", "python.exe")
+
+                # Step 1: Extract text from URL
+                print("Running extraction...")
+                subprocess.run([python_exe, "extract_text.py", url], check=True)
+
+                # Step 2: Generate summary
+                print("Running summarization...")
+                subprocess.run([python_exe, "summarize_chunks.py"], check=True)
+
+                # Step 3: Extract structured insights
+                print("Running insights extraction...")
+                subprocess.run([python_exe, "extract_insights.py"], check=True)
+
+                # Load results
+                with open("full_summary.txt", "r", encoding="utf-8") as f:
+                    summary = f.read()
+
+                with open("insights.txt", "r", encoding="utf-8") as f:
+                    insights = f.read()
+
+            except subprocess.CalledProcessError as e:
+                error = f"Processing failed (exit code {e.returncode}): {e.stderr.strip() or 'Unknown error'}"
+            except FileNotFoundError as e:
+                error = f"File not found: {str(e)} - Check if extraction completed successfully."
+            except Exception as e:
+                error = f"Unexpected error: {str(e)}"
+
+    return render_template("index.html", summary=summary, insights=insights, error=error)
 
 if __name__ == "__main__":
     app.run(debug=True)
