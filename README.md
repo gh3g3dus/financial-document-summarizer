@@ -38,3 +38,8 @@ python extract_text.py https://www.sec.gov/Archives/edgar/data/0001045810/000104
 
 # Chunk and summarize (first 30 chunks demo)
 python summarize_chunks.py
+
+
+## Current Results (Jan 18, 2026)
+- AI-generated summaries for **first 50 chunks** of NVIDIA 10-K (full_summary.txt)
+- Ready for full 132 chunks + Flask integration
