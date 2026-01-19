@@ -1,22 +1,24 @@
-# Executive Summary – NVIDIA 10-K (Fiscal Year Ended January 26, 2025)
+# Executive Summary – NVIDIA 10-K (Fiscal Year Ended Jan 26, 2025)
 
-This AI-generated executive summary analyzes the first **30 chunks** (~90,000 characters) of NVIDIA's latest 10-K filing using Groq (Llama 3.3-70B) with skills from the **IBM AI Developer Professional Certificate**.
+AI-generated analysis of the **entire 10-K filing** (368,220 characters → 132 chunks) using Groq (Llama 3.3-70B) and skills from the IBM AI Developer Professional Certificate.
 
 ### Key Business Updates
-NVIDIA has solidified its position as a leader in **accelerated computing** and AI infrastructure. Major advancements include the **Blackwell architecture**, **NVIDIA AI Enterprise** software suite, **Grace CPU**, and **Omniverse** platform for virtual world simulation. The company dominates supercomputing (75% of TOP500 systems), gaming (RTX 50 Series with DLSS), and professional visualization, while expanding into automotive via the **DRIVE Hyperion** platform.
+- Launched **Blackwell architecture**, **Grace CPU**, **Omniverse**, and **DRIVE Hyperion**.
+- Dominates supercomputing (75% of TOP500) and gaming (RTX 50 Series with DLSS).
+- Expanded AI Enterprise software and cloud offerings.
 
-### Financial Performance Highlights
-While specific metrics are not fully detailed in the early sections, the filing reflects strong growth in **Data Center** and **Compute & Networking** segments, driven by AI and generative AI demand. NVIDIA maintains robust cash flows, diversified investments (marketable securities), and efficient expense management across R&D, SG&A, and equity compensation.
+### Financial Performance
+- Strong growth in **Data Center** and **Compute & Networking** segments.
+- Robust cash flows and diversified investments.
 
 ### Major Risks
-Key risks include:
-- Intense competition (AMD, Intel, Huawei, cloud giants building custom hardware)
-- **Geographic concentration** (Asia-Pacific supply chain)
-- **Customer concentration** (reliance on a few major clients)
-- U.S. **export controls** (restricting sales to China and other regions)
-- Supply chain disruptions and regulatory changes
+- Intense competition (AMD, Intel, custom silicon from cloud giants)
+- Geographic/customer concentration (Asia-Pacific, few large clients)
+- U.S. export controls (significant impact on China market)
+- Supply chain and IP protection risks
 
 ### Strategic Outlook
-NVIDIA is well-positioned for continued growth in AI, accelerated computing, and generative AI markets. The company is investing heavily in full-stack platforms, ecosystem partnerships, sustainability (100% renewable energy goal), and vertical-specific optimizations. Innovation in GPUs, software (CUDA, NIM), and AI infrastructure will drive long-term value, despite regulatory and competitive challenges.
+NVIDIA is positioned as the full-stack AI infrastructure leader, investing heavily in AI, sustainability (100% renewable energy goal by 2025), and ecosystem partnerships. Despite regulatory headwinds, continued innovation in GPUs, software, and vertical solutions will drive long-term growth.
 
-This partial analysis demonstrates end-to-end AI processing of complex financial documents: extraction, chunking, and generative summarization. Full processing (all 132 chunks) and structured insights extraction are in progress.
+Full raw AI output: [full_summary.txt](full_summary.txt)  
+Project repo: https://github.com/gh3g3dus/financial-document-summarizer
