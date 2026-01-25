@@ -41,5 +41,9 @@ python summarize_chunks.py
 
 
 ## Current Results (Jan 18, 2026)
-- AI-generated summaries for **first 50 chunks** of NVIDIA 10-K (full_summary.txt)
-- Ready for full 132 chunks + Flask integration
+## Milestone: Full Summarization Complete! (Jan 18, 2026)
+- Successfully extracted, chunked, and AI-summarized **all 132 chunks** of NVIDIA's 10-K filing (368,220 characters).
+- Used Groq (Llama 3.3-70B) for fast, high-quality generative summaries.
+- Output: Complete executive report in [full_summary.txt](full_summary.txt).
+- Insights extraction in progress (see [insights.txt](insights.txt) for partial results).
+- Live Flask web app running locally: input EDGAR URL → get AI analysis.
