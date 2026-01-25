@@ -1,3 +1,8 @@
+# Full AI-Generated Summary – NVIDIA 10-K (Fiscal Year Ended January 26, 2025)
+Generated with Groq (Llama 3.3-70B) – All 132 chunks – January 2026
+Total input text: ~368,220 characters
+Note: Early chunks may have minor formatting inconsistencies from initial runs. Full processing complete.
+
 --- Chunk 1 Summary ---
 The provided 10-K section appears to be a table of contents or index for NVIDIA's (NVDA) financial statements. As a senior financial analyst, I will summarize the key business updates, financial performance, risks, and strategic outlook based on typical 10-K report content.
 
