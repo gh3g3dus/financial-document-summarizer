@@ -1,47 +1,58 @@
 import os
+import time
 from groq import Groq
 from dotenv import load_dotenv
 import json
+import re  # for counting
 
 load_dotenv()
+
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def extract_insights(chunk_text, chunk_number):
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {"role": "system", "content": "Return ONLY valid JSON. No other text."},
-                {"role": "user", "content": f"""From this 10-K section, extract:
+    for attempt in range(5):
+        try:
+            response = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "system", "content": "Return ONLY valid JSON. No explanations."},
+                    {"role": "user", "content": f"""Extract in valid JSON only:
 - "revenue": main revenue figures (with year/quarter)
 - "net_income": net income/profit
 - "eps": earnings per share
 - "risks": top 3 risks (list of strings)
-- "outlook": 1-2 sentence strategic outlook
-Use "" or [] for missing items.
+- "outlook": 1-2 sentence outlook
+Use "" or [] for missing.
 
-Text:
-{chunk_text[:2000]}"""}  # Limit text to avoid token overflow
-            ],
-            temperature=0.3,
-            max_tokens=300
-        )
-        raw = response.choices[0].message.content.strip()
-        try:
-            insights = json.loads(raw)
-        except:
-            insights = {"error": "JSON parse failed", "raw": raw}
-        return f"Chunk {chunk_number}:\n{json.dumps(insights, indent=2)}\n"
-    except Exception as e:
-        return f"Chunk {chunk_number}: Error - {str(e)}\n"
+Text (first 2000 chars):
+{chunk_text[:2000]}"""}
+                ],
+                temperature=0.3,
+                max_tokens=300
+            )
+            raw = response.choices[0].message.content.strip()
+            try:
+                insights = json.loads(raw)
+            except json.JSONDecodeError:
+                insights = {"error": "JSON parse failed", "raw": raw}
+            return f"Chunk {chunk_number}:\n{json.dumps(insights, indent=2)}\n"
+        except Exception as e:
+            if "rate limit" in str(e).lower() or "429" in str(e):
+                wait = 5 * (2 ** attempt)
+                print(f"Rate limit on chunk {chunk_number} (attempt {attempt+1}/5). Wait {wait}s...")
+                time.sleep(wait)
+            else:
+                print(f"Error on chunk {chunk_number}: {str(e)}")
+                break
+    return f"Chunk {chunk_number}: [Skipped - rate limit or error]\n"
 
 if __name__ == "__main__":
     try:
         with open("extracted_text.txt", "r", encoding="utf-8") as f:
             full_text = f.read()
-    except:
-        print("Missing extracted_text.txt - run extract_text.py first!")
-        exit()
+    except FileNotFoundError:
+        print("extracted_text.txt not found - run extract_text.py first!")
+        exit(1)
 
     max_chars = 3000
     overlap = 200
@@ -52,16 +63,20 @@ if __name__ == "__main__":
         chunks.append(full_text[start:end])
         start = end - overlap
 
-    max_chunks = 30  # Same as your summary run
+    # Limit for live/demo (Render timeout)
+    max_chunks = 20
     chunks = chunks[:max_chunks]
+
+    print(f"Extracting insights from first {len(chunks)} chunks...\n")
 
     all_insights = []
     for i, chunk in enumerate(chunks):
-        print(f"Extracting chunk {i+1}/{max_chunks}...")
+        print(f"Chunk {i+1}/{len(chunks)}...")
         result = extract_insights(chunk, i+1)
         all_insights.append(result)
 
-    with open("insights.txt", "w", encoding="utf-8") as f:
-        f.write("\n".join(all_insights))
+        # Save after each chunk
+        with open("insights.txt", "w", encoding="utf-8") as f:
+            f.write("\n".join(all_insights))
 
-    print("Done! Insights saved to insights.txt")
+    print("Insights saved to insights.txt")
