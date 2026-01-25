@@ -21,16 +21,24 @@ def index():
                 subprocess.run(["python", "summarize_chunks.py"], check=True)
 
                 print("Running insights extraction...")
-                subprocess.run(["python", "extract_insights.py"], check=True)   
-                with open("full_summary.txt", "r", encoding="utf-8") as f:
-                    summary = f.read()
+                subprocess.run(["python", "extract_insights.py"], check=True)
 
-                with open("insights.txt", "r", encoding="utf-8") as f:
-                    insights = f.read()
+                # Load summary if it exists
+                try:
+                    with open("full_summary.txt", "r", encoding="utf-8") as f:
+                        summary = f.read()
+                except FileNotFoundError:
+                    summary = "Summary file not generated yet — processing may still be running or failed."
+
+                # Load insights if it exists
+                try:
+                    with open("insights.txt", "r", encoding="utf-8") as f:
+                        insights = f.read()
+                except FileNotFoundError:
+                    insights = "Insights file not generated yet."
+
             except subprocess.CalledProcessError as e:
                 error = f"Processing failed (exit code {e.returncode}): {e.stderr.strip() or 'Unknown error'}"
-            except FileNotFoundError as e:
-                error = f"File not found: {str(e)} - Check if extraction completed."
             except Exception as e:
                 error = f"Unexpected error: {str(e)}"
 
