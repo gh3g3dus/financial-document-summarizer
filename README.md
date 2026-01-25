@@ -12,6 +12,14 @@ An AI-powered tool that processes public SEC EDGAR financial filings (10-Ks, etc
 
 Built using skills from the **IBM AI Developer Professional Certificate** (generative AI, prompt engineering, Python, Flask).
 
+## Live Demo (Deployed on Render Free Tier)
+https://financial-summarizer-wfgq.onrender.com/
+
+- Enter any SEC EDGAR HTML URL (e.g., NVIDIA 10-K: https://www.sec.gov/Archives/edgar/data/0001045810/000104581025000023/nvda-20250126.htm)
+- Click "Analyze" to get AI-generated summary and insights
+- Free tier notes: First load may take 30–60s (wake-up delay). Processing can be slow due to rate limits — limited to 20–30 chunks for speed.
+- Full local run (unlimited chunks) available via `python app.py`
+
 ## Features (Current)
 - Downloads and extracts clean text from SEC EDGAR HTML filings
 - Intelligent chunking for large documents (e.g., 132 chunks from NVIDIA 10-K)
