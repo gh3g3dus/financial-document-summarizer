@@ -14,32 +14,23 @@ def index():
         url = request.form.get("url")
         if url:
             try:
-                # Use the venv's Python executable to ensure correct environment
-                python_exe = os.path.join(os.getcwd(), "venv", "Scripts", "python.exe")
-
-                # Step 1: Extract text from URL
                 print("Running extraction...")
-                subprocess.run([python_exe, "extract_text.py", url], check=True)
+                subprocess.run(["python", "extract_text.py", url], check=True)
 
-                # Step 2: Generate summary
                 print("Running summarization...")
-                subprocess.run([python_exe, "summarize_chunks.py"], check=True)
+                subprocess.run(["python", "summarize_chunks.py"], check=True)
 
-                # Step 3: Extract structured insights
                 print("Running insights extraction...")
-                subprocess.run([python_exe, "extract_insights.py"], check=True)
-
-                # Load results
+                subprocess.run(["python", "extract_insights.py"], check=True)   
                 with open("full_summary.txt", "r", encoding="utf-8") as f:
                     summary = f.read()
 
                 with open("insights.txt", "r", encoding="utf-8") as f:
                     insights = f.read()
-
             except subprocess.CalledProcessError as e:
                 error = f"Processing failed (exit code {e.returncode}): {e.stderr.strip() or 'Unknown error'}"
             except FileNotFoundError as e:
-                error = f"File not found: {str(e)} - Check if extraction completed successfully."
+                error = f"File not found: {str(e)} - Check if extraction completed."
             except Exception as e:
                 error = f"Unexpected error: {str(e)}"
 
