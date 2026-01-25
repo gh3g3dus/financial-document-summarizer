@@ -2,6 +2,7 @@ import os
 import time
 from groq import Groq
 from dotenv import load_dotenv
+import re  # for counting existing chunks
 
 load_dotenv()
 
@@ -55,34 +56,43 @@ if __name__ == "__main__":
         start = end - overlap
     # =========================================
 
-    # === LIMIT PROCESSING (optional - change number or comment out) ===
-    max_chunks_to_process = 50  # Set to 30, 50, or None for all chunks
-    if max_chunks_to_process is not None:
-        chunks = chunks[:max_chunks_to_process]
-    # =========================================
+    # === RESUME & BATCH CONTROL ===
+    output_file = "full_summary.txt"
 
-    print(f"Loaded {len(full_text):,} characters → {len(chunks)} chunks to process.\n")
+    # Load existing content and count chunks reliably
+    existing_content = ""
+    existing_chunk_count = 0
+    if os.path.exists(output_file):
+        with open(output_file, "r", encoding="utf-8") as f:
+            existing_content = f.read().strip()
+        # Count existing summaries using regex
+        matches = re.findall(r'--- Chunk \d+ Summary ---', existing_content)
+        existing_chunk_count = len(matches)
+        print(f"Detected {existing_chunk_count} existing chunks. Appending new ones...\n")
+
+    # Starting chunk number (resume after existing)
+    start_from_chunk = existing_chunk_count + 1
+
+    # Slice chunks to start from resume point
+    chunks = chunks[start_from_chunk - 1:]
+
+    # Optional: Limit this run to X chunks (to avoid rate limits)
+    max_batch_size = 30  # Change to 10, 20, 50, or None for all remaining
+    if max_batch_size is not None:
+        chunks = chunks[:max_batch_size]
+
+    print(f"Resuming from chunk {start_from_chunk} → Processing {len(chunks)} chunks this run...\n")
 
     all_summaries = []
 
-    # Load any existing summary (for resuming)
-    output_file = "full_summary.txt"
-    if os.path.exists(output_file):
-        with open(output_file, "r", encoding="utf-8") as f:
-            existing = f.read().strip()
-            if existing:
-                all_summaries = existing.split("\n\n--- Chunk")  # rough split
-                # Clean up the split (add back separator)
-                all_summaries = [s.strip() for s in all_summaries if s.strip()]
-                print(f"Loaded {len(all_summaries)} existing summaries. Resuming...\n")
+    # If we have existing content, start with it
+    if existing_content:
+        all_summaries.append(existing_content + "\n\n")
 
-    # Determine starting point (if resuming)
-    start_index = len(all_summaries)
-    print(f"Starting from chunk {start_index + 1}/{len(chunks)}\n")
-
-    for i in range(start_index, len(chunks)):
-        chunk_number = i + 1
-        print(f"Processing chunk {chunk_number}/{len(chunks)}...")
+    # Process the batch
+    for i in range(len(chunks)):
+        chunk_number = start_from_chunk + i
+        print(f"Processing chunk {chunk_number} (this run: {i+1}/{len(chunks)})...")
         summary = summarize_chunk(chunks[i], chunk_number)
         all_summaries.append(f"--- Chunk {chunk_number} Summary ---\n{summary}\n")
 
@@ -90,4 +100,9 @@ if __name__ == "__main__":
         with open(output_file, "w", encoding="utf-8") as f:
             f.write("\n".join(all_summaries))
 
-    print(f"\nProcessing complete! Full summary saved to {output_file}")
+    print(f"\nBatch complete! Current progress saved to {output_file}")
+    if len(chunks) > 0:
+        next_start = start_from_chunk + len(chunks)
+        print(f"Next batch: Update 'start_from_chunk' to {next_start} and rerun (or set max_batch_size = None for all remaining).")
+    else:
+        print("All chunks processed! Full summary complete.")
